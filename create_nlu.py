@@ -52,8 +52,8 @@ replace = args.replace_nlu
 intents_base_path = 'intents/clean/'
 all_intents = glob.glob(f"{intents_base_path}/*")
 
-domain_file = 'domain.yml'
-output_path = 'data/'
+domain_file = f'{base_path}/domain.yml'
+output_path = f'{base_path}/data/'
 #--------------------------------
 
 
