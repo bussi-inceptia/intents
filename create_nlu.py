@@ -1,9 +1,5 @@
-"""create_nlu
+# create_nlu.py
 
-Vamos a crear un protoscript que permita, a partir de la carpeta de intents y un archivo domain, crear un archivo nlu.md
-
-"""
-#%%
 import os
 import glob
 import yaml
@@ -14,9 +10,6 @@ parser = argparse.ArgumentParser(description="""***EXPERIMENTAL***
                                  basandose en los intents limpios y recolectados de 
                                  los distintos bots.""")
 
-#parser.add_argument("nombre", help="Nombre de la persona")
-parser.add_argument("-p","--path",        
-                    help = "Path de donde se leerá el domain.yml")
 parser.add_argument("-r","--regex",       
                     help = "Archivo que contenga la lista de regex a utilizar")
 parser.add_argument("-R","--use-regex",   
@@ -32,32 +25,24 @@ parser.add_argument("-S","--use-synonym",
 parser.add_argument("-y","--replace-nlu", action="store_true",
                     help = "flag que si se setea, reemplaza el nlu sin promptear warning")
 
-
 args = parser.parse_args()
-#print(args)
 
 #--------------------------------
 #parsing de arguentos
-base_path  = args.path
-if base_path is None:
-    print(Warning("no se proporcionó path. Saliendo"))
-    exit(1)
 
-regex_file   = f"{base_path}/regex"   if args.use_regex   is not None else args.regex
-lookup_file  = f"{base_path}/lookup"  if args.use_lookup  is not None else args.lookup
-synonym_file = f"{base_path}/synonym" if args.use_synonym is not None else args.synonym
-
+regex_file = args.regex
+lookup_file = args.lookup
+synonym_file = args.synonym
 replace = args.replace_nlu
 
-0#--------------------------------
-
+#--------------------------------
 
 #paths de intents, domain y nlu
 intents_base_path = 'intents/clean/'
 all_intents = glob.glob(f"{intents_base_path}/*")
 
-domain_file = f"{base_path}/domain.yml"
-output_path = f"{base_path}/data/"
+domain_file = 'domain.yml'
+output_path = 'data/'
 #--------------------------------
 
 
@@ -66,21 +51,25 @@ def get_intents_in_domain(domain_file):
     with open(domain_file, 'r') as file:
         data = yaml.safe_load(file)
 
-    intents =[]
-    for i,d in enumerate(data['intents']):
-        if isinstance(d,dict):
+    intents = []
+    for i, d in enumerate(data['intents']):
+        if isinstance(d, dict):
             intents.append(*list(d.keys()))
         else:
             intents.append(d)
-    intents = [i.lower() for i in intents] #por las dudas paso a lower
-    return intents    
+    intents = [i.lower() for i in intents]  # por las dudas paso a lower
+    return intents
+
 
 def get_regex(regex_file):
     raise(NotImplementedError('Todavía no implementé get_regex'))
-    #with open(regex_file,'r') as file:
+    # with open(regex_file,'r') as file:
+
+
 def get_synonyms(synonyms_file):
-    raise(NotImplementedError("Todavía no implementé get_synonyms"))        
-#--------------------------------    
+    raise(NotImplementedError("Todavía no implementé get_synonyms"))
+
+#--------------------------------
 
 #-----------Checkeo de archivos y path de salida--------------
 
@@ -88,63 +77,57 @@ def get_synonyms(synonyms_file):
 if not os.path.exists(output_path):
     os.mkdir(output_path)
 
-#checkeo si existe el archivo, y prompteo si se desea reemplazar
+# checkeo si existe el archivo, y prompteo si se desea reemplazar
 output_file = f"{output_path}nlu2.md"
 
 if os.path.exists(output_file):
-    if not replace:    
+    if not replace:
         print(Warning(f"El archivo \"{output_file}\" ya existe"))
-        replace =input(f'el archivo {output_file} ya existe, desea remplazarlo? (y/N)')
+        replace = input(f'el archivo {output_file} ya existe, desea remplazarlo? (y/N)')
         replace = replace.lower() == 'y'
     if replace:
         os.remove(output_file)
     else:
-        #acá iría un return porque no debería hacer el resto
+        # acá iría un return porque no debería hacer el resto
         print(f"el archivo de NLU ya existe y no se reemplaza, saltando procesamiento")
         exit(1)
 #-----------------------------------------------------------
 
-#TODO, checkear clean nlu hay paréntesis sin cerrar en weekday de ya_pague
+# TODO, checkear clean nlu hay paréntesis sin cerrar en weekday de ya_pague
 
-def write_elems_to_file(elems,type='intent'):
+def write_elems_to_file(elems, type='intent'):
     for el in elems:
         with open(f"{intents_base_path}{type}:{el}") as file:
             sentences_in_elem = file.readlines()
-            
-        with open(output_file,'a') as file:
-            file.writelines(f'## type:{el}\n')
-            file.writelines('- '+ '- '.join(sentences_in_elem)+ '\n\n' )
 
+        with open(output_file, 'a') as file:
+            file.writelines(f'## {type}:{el}\n')
+            file.writelines('- ' + '- '.join(sentences_in_elem) + '\n\n')
 
 
 intents = get_intents_in_domain(domain_file)
-write_elems_to_file(intents,type='intent')        
-
+write_elems_to_file(intents, type='intent')
 
 if regex_file is not None:
     try:
         regex = get_regex(regex_file)
-        write_elems_to_file(regex,type='regex')
+        write_elems_to_file(regex, type='regex')
     except Exception as e:
-        print(e)    
+        print(e)
         exit(1)
 if synonym_file is not None:
     try:
-        synonym = get_synonym(synonym_file)
-        write_elems_to_file(synonym,type='synonym')
+        synonym = get_synonyms(synonym_file)
+        write_elems_to_file(synonym, type='synonym')
     except NotImplementedError as e:
-        print(e)    
+        print(e)
         exit(1)
 
 if lookup_file is not None:
     try:
         lookup = get_regex(lookup_file)
-        write_elems_to_file(lookup,type='lookup')
+        write_elems_to_file(lookup, type='lookup')
     except NotImplementedError as e:
-        print(e)    
+        print(e)
         exit(1)
 
-
-
-
-# %%
