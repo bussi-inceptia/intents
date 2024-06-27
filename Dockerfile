@@ -11,7 +11,9 @@ RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/bussi-inceptia/intents.git
 
 # Cambia al directorio del repositorio clonado
-WORKDIR /app/intents
+#WORKDIR /app/intents
+
+copy . /app
 
 # Instala las dependencias del repositorio
 RUN pip install -r requirements.txt
@@ -20,4 +22,4 @@ RUN pip install -r requirements.txt
 #COPY create_nlu.py /app/repo/
 
 # Define el comando por defecto que se ejecutará cuando se inicie el contenedor
-CMD ["python", "create_nlu.py"]
+CMD ["python", "create_nlu.py", "-p \"app/\""]

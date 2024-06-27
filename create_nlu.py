@@ -10,6 +10,9 @@ parser = argparse.ArgumentParser(description="""***EXPERIMENTAL***
                                  basandose en los intents limpios y recolectados de 
                                  los distintos bots.""")
 
+#parser.add_argument("nombre", help="Nombre de la persona")
+parser.add_argument("-p","--path",        
+                    help = "Path de donde se leerá el domain.yml")
 parser.add_argument("-r","--regex",       
                     help = "Archivo que contenga la lista de regex a utilizar")
 parser.add_argument("-R","--use-regex",   
@@ -25,14 +28,22 @@ parser.add_argument("-S","--use-synonym",
 parser.add_argument("-y","--replace-nlu", action="store_true",
                     help = "flag que si se setea, reemplaza el nlu sin promptear warning")
 
+
 args = parser.parse_args()
+#print(args)
 
 #--------------------------------
 #parsing de arguentos
+base_path  = args.path
+if base_path is None:
+    print(Warning("no se proporcionó path. Saliendo"))
+    exit(1)
 
-regex_file = args.regex
-lookup_file = args.lookup
-synonym_file = args.synonym
+regex_file   = f"{base_path}/regex"   if args.use_regex   is not None else args.regex
+lookup_file  = f"{base_path}/lookup"  if args.use_lookup  is not None else args.lookup
+synonym_file = f"{base_path}/synonym" if args.use_synonym is not None else args.synonym
+
+
 replace = args.replace_nlu
 
 #--------------------------------
