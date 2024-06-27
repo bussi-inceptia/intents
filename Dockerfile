@@ -14,7 +14,7 @@ RUN git clone https://github.com/bussi-inceptia/intents.git
 WORKDIR /app/intents
 
 # Instala las dependencias del repositorio
-#RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Copia el script a ejecutar en el contenedor
 #COPY create_nlu.py /app/repo/
