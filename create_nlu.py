@@ -59,6 +59,8 @@ output_path = f'{base_path}/data/'
 
 #----------- Funciones de utilidad -----------------
 def get_intents_in_domain(domain_file):
+    print(f"intentando abrir {domain_file}")
+    print(f"full_path: {os.full_path(domain_file)}")
     with open(domain_file, 'r') as file:
         data = yaml.safe_load(file)
 
